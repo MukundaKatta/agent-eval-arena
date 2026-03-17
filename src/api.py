@@ -1,72 +1,75 @@
-"""agent-eval-arena — api module. Head-to-head AI agent evaluation with ELO ratings"""
-import logging
+"""FastAPI application for agent-eval-arena."""
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
 from typing import Any, Dict, List, Optional
-from dataclasses import dataclass, field
-from pydantic import BaseModel
+import logging, time, uuid
 
 logger = logging.getLogger(__name__)
+app = FastAPI(title="agent-eval-arena", version="0.1.0", description="agent-eval-arena API")
 
+# --- Models ---
+class ProcessRequest(BaseModel):
+    input: str
+    options: Dict[str, Any] = {}
+    context: Optional[Dict[str, Any]] = None
 
-class ApiConfig(BaseModel):
-    """Configuration for Api."""
-    name: str = "api"
-    enabled: bool = True
-    max_retries: int = 3
-    timeout: float = 30.0
-    options: Dict[str, Any] = field(default_factory=dict) if False else {}
-
-
-class ApiResult(BaseModel):
-    """Result from Api operations."""
-    success: bool = True
-    data: Dict[str, Any] = {}
-    errors: List[str] = []
+class ProcessResponse(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4())[:8])
+    success: bool
+    result: Any
+    processing_time_ms: float = 0
     metadata: Dict[str, Any] = {}
 
+class BatchRequest(BaseModel):
+    items: List[ProcessRequest]
 
-class Api:
-    """Core Api implementation for agent-eval-arena."""
-    
-    def __init__(self, config: Optional[ApiConfig] = None):
-        self.config = config or ApiConfig()
-        self._initialized = False
-        self._state: Dict[str, Any] = {}
-        logger.info(f"Api created: {self.config.name}")
-    
-    async def initialize(self) -> None:
-        """Initialize the component."""
-        if self._initialized:
-            return
-        await self._setup()
-        self._initialized = True
-        logger.info(f"Api initialized")
-    
-    async def _setup(self) -> None:
-        """Internal setup — override in subclasses."""
-        pass
-    
-    async def process(self, input_data: Any) -> ApiResult:
-        """Process input and return results."""
-        if not self._initialized:
-            await self.initialize()
-        try:
-            result = await self._execute(input_data)
-            return ApiResult(success=True, data={"result": result})
-        except Exception as e:
-            logger.error(f"Api error: {e}")
-            return ApiResult(success=False, errors=[str(e)])
-    
-    async def _execute(self, data: Any) -> Any:
-        """Core execution logic."""
-        return {"processed": True, "input_type": type(data).__name__}
-    
-    def get_status(self) -> Dict[str, Any]:
-        """Get component status."""
-        return {"name": "api", "initialized": self._initialized,
-                "config": self.config.model_dump()}
-    
-    async def shutdown(self) -> None:
-        """Graceful shutdown."""
-        self._state.clear()
-        self._initialized = False
-        logger.info(f"Api shut down")
+# --- State ---
+_history: List[Dict] = []
+
+# --- Routes ---
+@app.get("/health")
+def health():
+    return {"status": "ok", "service": "agent-eval-arena", "version": "0.1.0"}
+
+@app.post("/process", response_model=ProcessResponse)
+async def process(req: ProcessRequest):
+    start = time.time()
+    try:
+        result = _core_process(req.input, req.options)
+        elapsed = (time.time() - start) * 1000
+        resp = ProcessResponse(success=True, result=result, processing_time_ms=round(elapsed, 2),
+                              metadata={"service": "agent-eval-arena", "input_length": len(req.input)})
+        _history.append({"id": resp.id, "input": req.input[:100], "success": True})
+        return resp
+    except Exception as e:
+        logger.error(f"Processing error: {e}")
+        raise HTTPException(500, str(e))
+
+@app.post("/batch")
+async def batch_process(req: BatchRequest):
+    results = []
+    for item in req.items:
+        start = time.time()
+        result = _core_process(item.input, item.options)
+        elapsed = (time.time() - start) * 1000
+        results.append(ProcessResponse(success=True, result=result, processing_time_ms=round(elapsed, 2)))
+    return {"results": [r.model_dump() for r in results], "total": len(results)}
+
+@app.get("/history")
+def get_history(limit: int = 20):
+    return _history[-limit:]
+
+@app.get("/status")
+def status():
+    return {"service": "agent-eval-arena", "version": "0.1.0", "ready": True,
+            "total_processed": len(_history)}
+
+def _core_process(input_text: str, options: Dict[str, Any] = {}) -> Dict[str, Any]:
+    """Core processing logic."""
+    words = input_text.split()
+    return {
+        "input_length": len(input_text),
+        "word_count": len(words),
+        "processed": True,
+        "options_applied": list(options.keys()),
+    }
