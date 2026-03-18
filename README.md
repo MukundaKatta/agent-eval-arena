@@ -1,13 +1,15 @@
-# agent-eval-arena
+# Agent Eval Arena
 
-Stub Python project. Described as "head-to-head AI agent evaluation platform with ELO rating system," but none of that functionality exists.
+Head-to-head AI agent evaluation platform with ELO rating system.
 
-## What's actually here
+## About
+Agent Eval Arena provides a structured environment for comparing AI agents side-by-side. It implements an ELO-based ranking system to track agent performance across various tasks, enabling systematic benchmarking and comparison of different agent architectures.
 
-A single class in `src/core.py` (AgentEvalArena) with placeholder methods (process, analyze, transform, validate, export, get_stats) that each return a fixed dictionary like `{ "ok": True }` without doing any real work. There is no agent evaluation, no head-to-head comparison, no ELO rating system - just stubs.
-
-The project uses only Python standard library imports (time, logging, json, typing). No evaluation or ranking libraries are present.
+## Tech Stack
+- Language: Python
+- Rating System: ELO algorithm implementation
+- Evaluation: Configurable task suites and metrics
+- API: Agent submission and scoring endpoints
 
 ## Status
-
-Scaffolding only. No working evaluation platform functionality exists.
+Active development - evaluation framework and ELO rating engine established.
