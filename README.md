@@ -1,31 +1,64 @@
-# agent-eval-arena
+# Agent Eval Arena
 
-**Head-to-head AI agent evaluation with ELO ratings**
+Head-to-head AI agent evaluation with ELO ratings
 
-## Install
+## Features
+
+- Api
+Arena
+Elo System
+Evaluator
+Judges
+Matchmaker
+Reporter
+Scenarios
+
+## Tech Stack
+
+- **Language:** Python
+- **Framework:** FastAPI
+- **Key Dependencies:** pydantic,fastapi,uvicorn,anthropic,openai,numpy
+- **Containerization:** Docker + Docker Compose
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.11+
+- Docker & Docker Compose (optional)
+
+### Installation
+
 ```bash
-pip install -e '.[dev]'
+git clone https://github.com/MukundaKatta/agent-eval-arena.git
+cd agent-eval-arena
+pip install -r requirements.txt
 ```
 
-## Quick Start
-```python
-from src import __version__
+### Running
+
+```bash
+uvicorn app.main:app --reload
 ```
 
-## Modules
-- **arena**
-- **matchmaker**
-- **evaluator**
-- **elo_system**
-- **judges**
-- **scenarios**
-- **reporter**
-- **api**
+### Docker
 
-## Docker
 ```bash
-docker compose up
+docker-compose up
+```
+
+## Project Structure
+
+```
+agent-eval-arena/
+├── src/           # Source code
+├── tests/         # Test suite
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+└── README.md
 ```
 
 ## License
-(c) 2026 Officethree Technologies. All Rights Reserved.
+
+MIT
