@@ -1,13 +1,40 @@
 [build-system]
 requires = ["setuptools>=68.0", "wheel"]
-build-backend = "setuptools.backends._legacy:_Backend"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-eval-arena"
-version = "0.1.0"
-description = "Head-to-head AI agent evaluation with ELO ratings"
-requires-python = ">=3.11"
-dependencies = ["pydantic>=2.0", "fastapi>=0.110.0", "uvicorn>=0.27.0", "anthropic>=0.39.0", "openai>=1.0"]
+version = "0.2.0"
+description = "Small offline arena that runs agents over tasks and prints a leaderboard."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+authors = [{ name = "Mukunda Katta" }]
+keywords = ["agents", "evaluation", "arena", "leaderboard", "llm"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Testing",
+]
+dependencies = []
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0", "pytest-asyncio>=0.23", "ruff>=0.3.0"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+agent-eval-arena = "agent_eval_arena.__main__:main"
+
+[project.urls]
+Repository = "https://github.com/MukundaKatta/agent-eval-arena"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

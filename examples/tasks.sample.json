@@ -1,0 +1,20 @@
+[
+  {
+    "task_id": "capital_france",
+    "prompt": "What is the capital of France?",
+    "scorer": "exact",
+    "expected": "Paris"
+  },
+  {
+    "task_id": "define_arena",
+    "prompt": "In one sentence, what is an evaluation arena?",
+    "scorer": "keyword",
+    "reference": { "keywords": ["agents", "tasks", "score"] }
+  },
+  {
+    "task_id": "cite_python",
+    "prompt": "Name a programming language created in 1991.",
+    "scorer": "contains",
+    "expected": "Python"
+  }
+]

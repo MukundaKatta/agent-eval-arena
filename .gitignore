@@ -1,9 +1,9 @@
-node_modules/
-dist/
-.next/
 __pycache__/
-*.egg-info/
-.DS_Store
 *.pyc
-.env
+*.egg-info/
+build/
+dist/
+.pytest_cache/
 .venv/
+.env
+.DS_Store
